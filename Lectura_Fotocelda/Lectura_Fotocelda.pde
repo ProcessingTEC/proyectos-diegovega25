@@ -1,10 +1,10 @@
-//Tomas de Camino Beck
-
+//Diego Rojas - Rocio Quiros
 import processing.serial.*;
 Serial port;
 String data;
-float[] val = new float[2];
-float x,y;
+float dato;
+float x;
+ArrayList<rectangulo> rects = new ArrayList<rectangulo>();
 
 void setup() {
   println(Serial.list());
@@ -13,24 +13,42 @@ void setup() {
   port.bufferUntil('\n');  //clear the buffer
   size(600, 600);
   background(255);
-  
-   
-  
 }
 
 void draw() {
-   
   background(255);
-  fill(150,255,150);
-translate(0, height/2);
-  rect(0, 0, map(val[0],0,1023,0,200), map(val[1],0,1023,0,200));
+  translate(0, height/2);
+  rects.add(new rectangulo(map(dato,0,1023,0,200),x));
+  x+=5;
+  for (int i = 0; i < rects.size(); i++) {
+    rectangulo part = rects.get(i);
+    part.dibujar();
+  }
+  if(rects.size() == 130){
+    rects.clear();
+    x=0;
+  }
 }
 
 void serialEvent(Serial port) {
-  data = port.readString();
-  String[] list = split(data, ',');
-  x=val[0];
-  y=val[1];
-  val[0]=float(list[0]);
-  val[1]=float(list[1]);
+   data = port.readString();
+   if(data!= null){
+     data = trim(data);
+     dato = float(data);
+   }
+}
+
+class rectangulo{
+  float alto = 0, ancho = 5;
+  float posX;
+  
+  rectangulo(float alt, float x){
+    alto = alt;
+    posX= x;
+  }  
+  
+  void dibujar(){
+    fill(dato);
+    rect(posX, 0, ancho, alto);
+  }
 }
